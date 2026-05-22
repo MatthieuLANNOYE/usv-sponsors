@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sponsors – US Vermelles</title>
+  <style>
+    /* ============================================================
+       CONFIGURATION VISUELLE — modifier ici si besoin
+    ============================================================ */
+    :root {
+      --color-bg:       #0a0f1e;
+      --color-card:     #111827;
+      --color-accent:   #e8b020;      /* Couleur principale (doré) */
+      --color-accent2:  #ffffff;
+      --color-text:     #f0f0f0;
+      --color-subtle:   #8899aa;
+      --duration-show:  5000;         /* Durée d'affichage par sponsor (ms) */
+      --duration-fade:  800;          /* Durée de transition (ms) */
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-family: 'Georgia', serif;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      display: flex;
+      flex-direction: column;        /* ← changé */
+      align-items: stretch;          /* ← changé */
+      padding: 18px 40px 0;          /* ← plus de padding bas */
+      background: linear-gradient(180deg, #111827 0%, transparent 100%);
+      flex-shrink: 0;
+    }
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      padding-bottom: 14px;
+      width: 100%;
+    }
+
+    .chevalement-icon {
+      width: 38px;
+      height: 50px;
+      flex-shrink: 0;
+      opacity: 0.85;
+    }
+
+    .header-terril {
+      width: 100%;
+      height: 32px;
+      display: block;
+      overflow: visible;
+    }
+
+    .club-badge {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: var(--color-accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: bold;
+      color: #0a0f1e;
+      flex-shrink: 0;
+      letter-spacing: -1px;
+    }
+
+    .club-badge-img {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+
+    .club-title {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .club-name {
+      font-size: clamp(16px, 2vw, 24px);
+      font-weight: bold;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--color-accent);
+    }
+
+    .club-subtitle {
+      font-size: clamp(11px, 1.2vw, 15px);
+      color: var(--color-subtle);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .header-label {
+      margin-left: auto;
+      font-size: clamp(13px, 1.5vw, 18px);
+      color: var(--color-accent);           /* doré au lieu de subtle */
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      border: 1px solid var(--color-accent); /* bordure dorée */
+      padding: 6px 18px;
+      border-radius: 20px;
+      font-weight: bold;
+      text-shadow: 0 0 12px rgba(232,176,32,0.4); /* légère lueur */
+      box-shadow: 0 0 10px rgba(232,176,32,0.15);  /* halo extérieur */
+    }
+
+    /* === ZONE PRINCIPALE === */
+    main {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* Fond décoratif */
+    main::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 60% at 50% 50%, #1a2540 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* Coins décoratifs */
+    main::after {
+      content: '';
+      position: absolute;
+      inset: 30px 20px 20px;   /* top plus grand = cadre descend */
+      border: 1px solid #1e2d45;
+      border-radius: 4px;
+      pointer-events: none;
+    }
+
+    /* === CARTE SPONSOR === */
+    .sponsor-card {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(20px, 3vh, 40px);
+      padding: 40px 60px;
+      opacity: 0;
+      transform: scale(0.97);
+      transition:
+        opacity calc(var(--duration-fade) * 1ms) ease,
+        transform calc(var(--duration-fade) * 1ms) ease;
+      max-width: 80vw;
+      text-align: center;
+    }
+
+    .sponsor-card.active {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    /* Cadre logo */
+    .logo-frame {
+      width: clamp(200px, 30vw, 420px);
+      height: clamp(130px, 20vh, 260px);
+      background: #fff;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 28px 36px;
+      box-shadow:
+        0 0 0 3px var(--color-accent),
+        0 20px 60px rgba(0,0,0,0.6);
+      overflow: hidden;
+    }
+
+    .logo-frame img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    /* Fallback si pas de logo : initiales */
+    .logo-placeholder {
+      font-size: clamp(40px, 6vw, 90px);
+      font-weight: bold;
+      color: var(--color-accent);
+      letter-spacing: -2px;
+      font-family: 'Georgia', serif;
+      line-height: 1;
+    }
+
+    /* Nom du sponsor */
+    .sponsor-name {
+      font-size: clamp(22px, 4vw, 58px);
+      font-weight: bold;
+      letter-spacing: 0.06em;
+      color: var(--color-accent2);
+      text-transform: uppercase;
+      line-height: 1.1;
+    }
+
+    /* Catégorie optionnelle */
+    .sponsor-category {
+      font-size: clamp(12px, 1.5vw, 18px);
+      color: var(--color-subtle);
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+    }
+
+    /* Ligne décorative sous le nom */
+    .sponsor-divider {
+      width: 60px;
+      height: 3px;
+      background: var(--color-accent);
+      border-radius: 2px;
+    }
+
+    .sponsor-location,
+    .sponsor-contact {
+      font-size: clamp(12px, 1.5vw, 18px);
+      color: var(--color-subtle);
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+    }
+
+    .sponsor-location::before { content: '📍 '; }
+    .sponsor-contact::before  { content: '📞 '; }
+
+    /* === DIAPO SLOGAN CLUB === */
+    .club-slide {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(18px, 3vh, 36px);
+      padding: 40px 80px;
+      opacity: 0;
+      transform: scale(0.97);
+      transition:
+        opacity calc(var(--duration-fade) * 1ms) ease,
+        transform calc(var(--duration-fade) * 1ms) ease;
+      text-align: center;
+      max-width: 90vw;
+    }
+
+    .club-slide.active {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .club-slide .badge-lg {
+      width: clamp(80px, 12vw, 140px);
+      height: clamp(80px, 12vw, 140px);
+      border-radius: 50%;
+      background: var(--color-accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(28px, 4.5vw, 56px);
+      font-weight: bold;
+      color: #0a0f1e;
+      letter-spacing: -2px;
+      box-shadow: 0 0 0 4px #0a0f1e, 0 0 0 7px var(--color-accent), 0 20px 60px rgba(232,176,32,0.3);
+      flex-shrink: 0;
+    }
+
+    .club-slide .slogan-line {
+      display: block;
+      font-size: clamp(28px, 5vw, 72px);
+      font-weight: bold;
+      letter-spacing: 0.04em;
+      color: var(--color-accent2);
+      line-height: 1.15;
+    }
+
+    .club-slide .slogan-line em {
+      font-style: normal;
+      color: var(--color-accent);
+    }
+
+    .club-slide .club-full-name {
+      font-size: clamp(12px, 1.6vw, 20px);
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--color-subtle);
+      margin-top: 4px;
+    }
+
+    .club-slide .ornament {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      color: var(--color-accent);
+      opacity: 0.6;
+    }
+
+    .club-slide .ornament::before,
+    .club-slide .ornament::after {
+      content: '';
+      display: block;
+      width: clamp(40px, 6vw, 100px);
+      height: 1px;
+      background: var(--color-accent);
+      opacity: 0.5;
+    }
+
+    /* === FOOTER — barre de progression === */
+    footer {
+      flex-shrink: 0;
+      padding: 0 0 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Points de navigation */
+    .dots {
+      display: flex;
+      gap: 8px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #2a3550;
+      transition: background 0.4s, transform 0.4s;
+    }
+
+    .dot.active {
+      background: var(--color-accent);
+      transform: scale(1.4);
+    }
+
+    /* Barre de progression */
+    .progress-track {
+      width: min(500px, 60vw);
+      height: 3px;
+      background: #1a2540;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: var(--color-accent);
+      border-radius: 2px;
+      width: 0%;
+      transition: none;
+    }
+
+    .progress-bar.running {
+      transition: width linear;
+    }
+
+    .merci {
+      font-size: clamp(10px, 1.2vw, 13px);
+      color: var(--color-subtle);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ============================================================
+  LISTE DES SPONSORS — MODIFIER ICI
+  Pour chaque sponsor :
+    name     : Nom affiché sous le logo
+    logo     : Chemin vers l'image (ex: "logos/mon-sponsor.png")
+               Mettre null si pas de logo → les initiales s'affichent
+    category : Texte optionnel (ex: "Partenaire Gold", "Fournisseur"…)
+               Mettre "" pour ne rien afficher
+============================================================ -->
+<script>
+const SPONSORS = [
+  {
+    name:     "Tissot Audition",
+    logo:     "logos/Tissot-audition.png",
+    location: "14 Route Nationale - Vermelles",           /* ← optionnel, supprimer la ligne si inutile */
+    contact:  "03 21 62 09 87",
+    category: "Partenaire Officiel"
+  },
+  {
+    name:     "Mille et Un Batiments",
+    logo:     "logos/milletunbatiments.png",
+    location: "260b Rue du Moulin - Vieille-Chapelle",           /* ← optionnel, supprimer la ligne si inutile */
+    contact:  "06 20 77 50 54",
+    category: "Partenaire Officiel"
+  },
+  {
+    name:     "Pizzeria Di Salvo",
+    logo:     "logos/di-salvo.jfif",
+    category: "Partenaire Officiel",
+    location: "28 Rue Jean Jaurès - Vermelles",           /* ← optionnel, supprimer la ligne si inutile */
+    contact:  "09 78 80 36 24",
+    category: "Partenaire Officiel"
+  },
+  {
+    name:     "Mairie de Vermelles",
+    logo:     "logos/mairie.png",
+    category: "Soutien Institutionnel"
+  },
+  {
+    name:     "Vermelles Optique",
+    logo:     "logos/vermelles-optique.jpg",
+    location: "2 Rue de Montpellier - Vermelles",           /* ← optionnel, supprimer la ligne si inutile */
+    contact:  "03 21 52 30 19",
+    category: "Partenaire Officiel"
+  },
+  {
+    name:     "Nuances Constructions",
+    logo:     "logos/nuances-constructions.png",
+    location: "8 Route de Méricourt - Billy-Montigny",           /* ← optionnel, supprimer la ligne si inutile */
+    contact:  "06 46 91 29 16",
+    category: "Partenaire Officiel"
+  },
+  {
+    name:     "EBA Coiffure",
+    logo:     null,
+    location: "44 Route Nationale - Auchy les Mines",           /* ← optionnel, supprimer la ligne si inutile */
+    contact:  "03 62 13 48 66",
+    category: "Partenaire Officiel"
+  },
+  {
+    name:     "Lens Ambulances",
+    logo:     "logos/ambulance.jpg",
+    location: "Rue de l'Abbé Jerzy Popieluszko - Lens",           /* ← optionnel, supprimer la ligne si inutile */
+    contact:  "03 21 28 37 17",
+    category: "Partenaire Officiel"
+  },
+  {
+    name:     "Jako",
+    logo:     "logos/jako.png",
+    category: "Partenaire Officiel"
+  },
+  {
+    name:     "Taff Equipements",
+    logo:     "logos/taff.png",
+    category: "Partenaire Officiel"
+  },
+  {
+    name:     "Aux Délices de Verquin",
+    logo:     "logos/délices-verquin.jfif",
+    location: "1 Rue Constant Martin - Verquin",           /* ← optionnel, supprimer la ligne si inutile */
+    contact:  "03 21 56 40 74",
+    category: "Partenaire Officiel"
+  },
+  {
+    name:     "Carrefour Auchy les Mines",
+    logo:     "logos/Logo_Carrefour.svg",
+    category: "Partenaire Fidèle"
+  },
+  {
+    name:     "Carrefour City Roncq",
+    logo:     "logos/carrefour-city.png",
+    category: "Partenaire Officiel"
+  },
+  {
+    name:     "Maison Thiriet",
+    logo:     "logos/thiriet.png",
+    category: "Partenaire Officiel"
+  },
+  {
+    name:     "Leroy Seafood France",
+    logo:     "logos/leroy.jfif",
+    category: "Partenaire Officiel"
+  },
+  {
+    name:     "Isonor",
+    logo:     "logos/isonor.png",
+    location: "205 Route de Béthune - Loos en Gohelle",           /* ← optionnel, supprimer la ligne si inutile */
+    contact:  "03 21 49 98 75",
+    category: "Partenaire Officiel"
+  },
+  {
+    name:     "Groupe Dubreu",
+    logo:     "logos/dubreux.png",
+    category: "Partenaire Officiel"
+  },
+];
+
+/* Durée d'affichage par sponsor en millisecondes */
+const DUREE_MS = 7000;
+
+/* Slogan du club — affiché en diapo entre les sponsors */
+const SLOGAN = "Forgés dans le noir, unis pour la victoire";
+
+/* Tous combien de sponsors afficher la diapo du club (0 = jamais) */
+const SLOGAN_TOUS_LES_N = 9;
+</script>
+<!-- ============================================================ -->
+
+<header>
+  <div class="header-content">
+
+    <!-- Chevalement minier — redessiné -->
+    <svg class="chevalement-icon" viewBox="0 0 70 105" fill="none"
+         stroke="#e8b020" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <!-- Base -->
+      <line x1="2"  y1="100" x2="68" y2="100"/>
+      <!-- Jambes extérieures évasées -->
+      <line x1="5"  y1="100" x2="22" y2="65"/>
+      <line x1="65" y1="100" x2="48" y2="65"/>
+      <!-- Jambes intérieures -->
+      <line x1="18" y1="100" x2="22" y2="65"/>
+      <line x1="52" y1="100" x2="48" y2="65"/>
+      <!-- Entretoise base des jambes -->
+      <line x1="10" y1="88" x2="60" y2="88"/>
+
+      <!-- Tour principale — montants verticaux -->
+      <line x1="22" y1="65" x2="24" y2="20"/>
+      <line x1="48" y1="65" x2="46" y2="20"/>
+      <!-- Planchers horizontaux -->
+      <line x1="22" y1="65" x2="48" y2="65"/>
+      <line x1="23" y1="52" x2="47" y2="52"/>
+      <line x1="23" y1="40" x2="47" y2="40"/>
+      <line x1="24" y1="30" x2="46" y2="30"/>
+      <!-- Croix de Saint-André -->
+      <line x1="22" y1="52" x2="48" y2="65"/>
+      <line x1="48" y1="52" x2="22" y2="65"/>
+      <line x1="23" y1="40" x2="47" y2="52"/>
+      <line x1="47" y1="40" x2="23" y2="52"/>
+      <line x1="24" y1="30" x2="46" y2="40"/>
+      <line x1="46" y1="30" x2="24" y2="40"/>
+
+      <!-- Cabine au sommet -->
+      <rect x="23" y="18" width="24" height="13" rx="1"/>
+      <!-- Séparations cabine (fenêtres) -->
+      <line x1="31" y1="18" x2="31" y2="31"/>
+      <line x1="39" y1="18" x2="39" y2="31"/>
+
+      <!-- Mât vertical -->
+      <line x1="35" y1="18" x2="35" y2="9"/>
+      <!-- Roue / molette -->
+      <circle cx="35" cy="8" r="7.5"/>
+      <line x1="35" y1="1"   x2="35" y2="15"/>
+      <line x1="28" y1="8"   x2="42" y2="8"/>
+      <line x1="30" y1="3"   x2="40" y2="13"/>
+      <line x1="40" y1="3"   x2="30" y2="13"/>
+
+      <!-- Câbles en pointillés -->
+      <line x1="29" y1="14" x2="23" y2="52" stroke-dasharray="3,2" stroke-width="1.1"/>
+      <line x1="41" y1="14" x2="47" y2="52" stroke-dasharray="3,2" stroke-width="1.1"/>
+    </svg>
+
+    <img src="logos/logo-usv.png" alt="Logo US Vermelles" class="club-badge-img" />
+    <div class="club-title">
+      <span class="club-name">US Vermelles</span>
+      <span class="club-subtitle">Forgés dans le noir, unis pour la victoire</span>
+    </div>
+    <div class="header-label">Nos sponsors</div>
+  </div>
+
+  <!-- Ligne terrils avec sommets arrondis -->
+  <svg class="header-terril" viewBox="0 0 1440 36" preserveAspectRatio="none">
+    <!-- Masque fond -->
+    <path d="M0,36 L0,30 L0,30 C115,30 125,2 160,2 C195,2 205,30 240,30 L1440,30 L1440,36 Z"
+          fill="#0a0f1e"/>
+    <!-- Ligne dorée : terril plus haut -->
+    <path d="M0,60 L80,60 C115,60 125,1 160,1 C195,1 205,60 240,60 L1440,60"
+          fill="none" stroke="#e8b020" stroke-width="2"/>
+  </svg>
+</header>
+
+<main id="stage"></main>
+
+<footer>
+  <div class="dots" id="dots"></div>
+  <div class="progress-track">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+  <div class="merci">Merci à tous nos partenaires ❤</div>
+</footer>
+
+<script>
+  /* ── Helpers ── */
+  function initiales(name) {
+    return name.split(' ')
+      .filter(w => w.length > 2)
+      .slice(0, 2)
+      .map(w => w[0].toUpperCase())
+      .join('');
+  }
+
+  /* ── Construction de la séquence (sponsors + diapos slogan intercalées) ── */
+  const stage = document.getElementById('stage');
+  const dotsEl = document.getElementById('dots');
+  const bar    = document.getElementById('progressBar');
+
+  /* Construit la liste finale des slides (sponsor ou club) */
+  const sequence = [];
+  SPONSORS.forEach((sp, i) => {
+    sequence.push({ type: 'sponsor', data: sp });
+    if (SLOGAN_TOUS_LES_N > 0 && (i + 1) % SLOGAN_TOUS_LES_N === 0) {
+      sequence.push({ type: 'club' });
+    }
+  });
+  /* Toujours commencer par la diapo club si on n'a pas beaucoup de sponsors */
+  if (SLOGAN_TOUS_LES_N > 0 && SPONSORS.length < SLOGAN_TOUS_LES_N) {
+    sequence.push({ type: 'club' });
+  }
+
+  /* Crée les éléments DOM pour chaque slide */
+  const slides = sequence.map((item) => {
+    let el;
+
+    if (item.type === 'club') {
+      /* ── Diapo slogan ── */
+      el = document.createElement('div');
+      el.className = 'club-slide';
+
+      /* Découpe le slogan pour mettre en valeur le dernier bout */
+      const parts = SLOGAN.split(',');
+      const sloganEl = document.createElement('span');
+      sloganEl.className = 'slogan-line';
+      if (parts.length >= 2) {
+        sloganEl.innerHTML =
+          parts.slice(0, -1).join(',') + ',<br><em>' + parts[parts.length - 1].trim() + '</em>';
+      } else {
+        sloganEl.textContent = SLOGAN;
+      }
+
+      const badge = document.createElement('img');
+      badge.className = 'badge-lg';
+      badge.src = 'logos/logo-usv.png';
+      badge.alt = 'USV';
+      badge.style.objectFit = 'contain';
+      badge.style.padding = '10px';
+      badge.style.background = 'var(--color-accent)';
+
+      const ornament = document.createElement('div');
+      ornament.className = 'ornament';
+      ornament.textContent = '⚽';
+
+      const fullName = document.createElement('div');
+      fullName.className = 'club-full-name';
+      fullName.textContent = 'Union Sportive de Vermelles';
+
+      el.appendChild(badge);
+      el.appendChild(sloganEl);
+      el.appendChild(ornament);
+      el.appendChild(fullName);
+
+    } else {
+      /* ── Diapo sponsor ── */
+      const sp = item.data;
+      el = document.createElement('div');
+      el.className = 'sponsor-card';
+
+      const frame = document.createElement('div');
+      frame.className = 'logo-frame';
+
+      if (sp.logo) {
+        const img = document.createElement('img');
+        img.src = sp.logo;
+        img.alt = sp.name;
+        frame.appendChild(img);
+      } else {
+        const ph = document.createElement('div');
+        ph.className = 'logo-placeholder';
+        ph.textContent = initiales(sp.name) || sp.name.slice(0, 2).toUpperCase();
+        frame.appendChild(ph);
+      }
+
+      const name = document.createElement('div');
+      name.className = 'sponsor-name';
+      name.textContent = sp.name;
+
+      const divider = document.createElement('div');
+      divider.className = 'sponsor-divider';
+
+      el.appendChild(frame);
+      el.appendChild(name);
+
+      if (sp.location) {
+        const loc = document.createElement('div');
+        loc.className = 'sponsor-location';
+        loc.textContent = sp.location;
+        el.appendChild(loc);
+      }
+
+      if (sp.contact) {
+        const tel = document.createElement('div');
+        tel.className = 'sponsor-contact';
+        tel.textContent = sp.contact;
+        el.appendChild(tel);
+      }
+
+      el.appendChild(divider);
+
+      if (sp.category) {
+        const cat = document.createElement('div');
+        cat.className = 'sponsor-category';
+        cat.textContent = sp.category;
+        el.appendChild(cat);
+      }
+    }
+
+    stage.appendChild(el);
+
+    /* Point de navigation (doré pour club, normal pour sponsor) */
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (item.type === 'club' ? ' dot-club' : '');
+    dotsEl.appendChild(dot);
+
+    return { el, dot, type: item.type };
+  });
+
+  /* Style spécial pour le point de navigation du club */
+  const style = document.createElement('style');
+  style.textContent = `.dot-club { background: #e8b020 !important; opacity: 0.4; border-radius: 3px !important; width: 16px !important; }
+  .dot-club.active { opacity: 1 !important; transform: scale(1.2) !important; }`;
+  document.head.appendChild(style);
+
+  /* ── Logique de défilement ── */
+  let current = 0;
+
+  function showSlide(idx) {
+    slides.forEach(({ el, dot }, i) => {
+      el.classList.toggle('active', i === idx);
+      dot.classList.toggle('active', i === idx);
+    });
+
+    bar.classList.remove('running');
+    bar.style.width = '0%';
+    void bar.offsetWidth;
+    bar.style.transition = `width ${DUREE_MS}ms linear`;
+    bar.classList.add('running');
+    bar.style.width = '100%';
+  }
+
+  function next() {
+    current = (current + 1) % slides.length;
+    showSlide(current);
+  }
+
+  showSlide(0);
+  setInterval(next, DUREE_MS);
+</script>
+</body>
+</html>
