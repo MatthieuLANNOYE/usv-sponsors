@@ -37,7 +37,7 @@
       display: flex;
       flex-direction: column;        /* ← changé */
       align-items: stretch;          /* ← changé */
-      padding: 18px 40px 0;          /* ← plus de padding bas */
+      padding: 10px 40px 0;          /* ← plus de padding bas */
       background: linear-gradient(180deg, #111827 0%, transparent 100%);
       flex-shrink: 0;
     }
@@ -45,7 +45,7 @@
     .header-content {
       display: flex;
       align-items: center;
-      gap: 18px;
+      gap: 8px;
       padding-bottom: 14px;
       width: 100%;
     }
@@ -93,7 +93,8 @@
     }
 
     .club-name {
-      font-size: clamp(16px, 2vw, 24px);
+      font-size: clamp(10px, 1vw, 13px);
+      white-space: nowrap;
       font-weight: bold;
       letter-spacing: 0.12em;
       text-transform: uppercase;
@@ -109,12 +110,13 @@
 
     .header-label {
       margin-left: auto;
-      font-size: clamp(13px, 1.5vw, 18px);
+      white-space: nowrap;     /* ← empêche le retour à la ligne */
+      font-size: clamp(12px, 1.3vw, 18px);
       color: var(--color-accent);           /* doré au lieu de subtle */
       letter-spacing: 0.2em;
       text-transform: uppercase;
       border: 1px solid var(--color-accent); /* bordure dorée */
-      padding: 6px 18px;
+      padding: 5px 14px;
       border-radius: 20px;
       font-weight: bold;
       text-shadow: 0 0 12px rgba(232,176,32,0.4); /* légère lueur */
@@ -158,8 +160,8 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: clamp(20px, 3vh, 40px);
-      padding: 40px 60px;
+      gap: clamp(12px, 2vh, 28px);
+      padding: 20px 60px;
       opacity: 0;
       transform: scale(0.97);
       transition:
@@ -335,12 +337,15 @@
     /* Points de navigation */
     .dots {
       display: flex;
-      gap: 8px;
+      max-width: 80vw;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 5px;
     }
 
     .dot {
-      width: 8px;
-      height: 8px;
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
       background: #2a3550;
       transition: background 0.4s, transform 0.4s;
@@ -428,8 +433,9 @@
 
     /* Logo plus grand sur TV */
     .logo-frame {
-      width: clamp(260px, 35vw, 500px);
-      height: clamp(160px, 25vh, 300px);
+      width: clamp(280px, 38vw, 520px);
+      height: clamp(160px, 22vh, 280px);
+      padding: 20px 30px;
     }
 
     /* Header plus lisible */
