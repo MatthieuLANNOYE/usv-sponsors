@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=1920, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sponsors – US Vermelles</title>
   <style>
     /* ============================================================
@@ -400,102 +400,68 @@
     }
 
     /* ============================================================
-      OPTIMISATION TV — Rendu 1920×1080 forcé + overscan
+      OPTIMISATION TV — Approche "fixed canvas + transform scale"
+      Standard pour le signage TV (Tizen, WebOS, Android TV…)
+      On dessine en 1920×1080 et on scale au viewport réel
     ============================================================ */
 
-    /*
-      Stratégie :
-      - On cible un viewport logique de 1920×1080 (meta width=1920)
-      - On utilise un "safe zone" de 5% sur chaque côté pour l'overscan TV
-      - Les valeurs vw/vh sont calibrées sur 1920×1080
-      - Le canvas est rendu au devicePixelRatio réel pour la netteté 4K
-    */
-
     html {
-      width: 1920px;     /* ancre le layout sur 1920 même si la TV scale */
-      height: 1080px;
       overflow: hidden;
-      font-size: 16px;   /* base rem explicite */
-    }
-
-    html, body {
-      overflow: hidden;
-    }
-
-    body {
-      width: 1920px;
-      height: 1080px;
-      /* Safe zone overscan : 4% horizontal, 3% vertical */
-      padding: 32px 77px;
       background: var(--color-bg);
     }
 
-    /* ── Textes optimisés pour lecture à 2–3m ── */
+    body {
+      /* Canvas logique fixe 1920×1080 */
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      /* L'origine du scale est en haut à gauche */
+      transform-origin: top left;
+      /* La valeur de scale est injectée par le JS ci-dessous */
+    }
+
+    /* ── Tailles calibrées sur 1920×1080 ── */
+
+    /* Sponsor : nom bien lisible à 3m */
     .sponsor-name {
-      /* Cible ~72px sur 1080p, 90px sur 4K upscalé */
-      font-size: clamp(42px, 3.75vw, 90px);
+      font-size: clamp(48px, 4.5vw, 86px);
       letter-spacing: 0.08em;
     }
 
     .sponsor-location,
     .sponsor-contact {
-      font-size: clamp(22px, 1.56vw, 30px);
+      font-size: clamp(24px, 1.8vw, 32px);
       letter-spacing: 0.15em;
     }
 
     .sponsor-category {
-      font-size: clamp(18px, 1.25vw, 24px);
+      font-size: clamp(18px, 1.4vw, 26px);
       letter-spacing: 0.22em;
     }
 
-    /* Logo plus grand, proportionnel à 1920px */
+    /* Logo bien proportionné */
     .logo-frame {
-      width: clamp(320px, 29vw, 560px);    /* ~556px sur 1920 */
-      height: clamp(180px, 20vh, 300px);   /* ~216px sur 1080 */
+      width: clamp(340px, 30vw, 580px);
+      height: clamp(190px, 22vh, 310px);
       padding: 24px 36px;
       border-radius: 14px;
     }
 
-    /* Header lisible à distance */
-    .club-name {
-      font-size: clamp(22px, 1.56vw, 30px);
-    }
+    /* Header */
+    .club-name     { font-size: clamp(22px, 1.8vw, 34px); }
+    .club-subtitle { font-size: clamp(14px, 1.1vw, 20px); }
+    .header-label  { font-size: clamp(16px, 1.3vw, 24px); }
 
-    .club-subtitle {
-      font-size: clamp(14px, 1.04vw, 20px);
-    }
+    /* Footer */
+    .progress-track { width: min(800px, 72vw); height: 6px; }
+    .dot            { width: 11px; height: 11px; }
+    .merci          { font-size: clamp(13px, 1vw, 18px); }
 
-    .header-label {
-      font-size: clamp(16px, 1.15vw, 22px);
-    }
+    /* Slogan club */
+    .club-slide .slogan-line   { font-size: clamp(52px, 5.5vw, 105px); }
+    .club-slide .club-full-name { font-size: clamp(16px, 1.4vw, 26px); }
 
-    /* Barre de progression plus épaisse et plus visible */
-    .progress-track {
-      width: min(800px, 70vw);
-      height: 6px;
-    }
-
-    /* Points de navigation plus visibles */
-    .dot {
-      width: 11px;
-      height: 11px;
-    }
-
-    /* Slogan club bien visible */
-    .club-slide .slogan-line {
-      font-size: clamp(48px, 5.2vw, 100px);
-    }
-
-    .club-slide .club-full-name {
-      font-size: clamp(16px, 1.35vw, 26px);
-    }
-
-    /* Merci footer */
-    .merci {
-      font-size: clamp(13px, 0.94vw, 18px);
-    }
-
-    /* Anti-aliasing et rendu optimisé TV */
+    /* Anti-aliasing TV */
     * {
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
@@ -504,6 +470,33 @@
   </style>
 </head>
 <body>
+
+<!-- ============================================================
+  SCALING TV — s'applique immédiatement au chargement
+============================================================ -->
+<script>
+  (function () {
+    const TARGET_W = 1920;
+    const TARGET_H = 1080;
+
+    function applyScale() {
+      const scaleX = window.innerWidth  / TARGET_W;
+      const scaleY = window.innerHeight / TARGET_H;
+      /* On prend le plus petit ratio pour que tout rentre sans déborder */
+      const scale  = Math.min(scaleX, scaleY);
+      document.body.style.transform = 'scale(' + scale + ')';
+      /* Centre le contenu si ratio d'aspect différent de 16:9 */
+      const offsetX = (window.innerWidth  - TARGET_W * scale) / 2;
+      const offsetY = (window.innerHeight - TARGET_H * scale) / 2;
+      document.body.style.marginLeft = offsetX + 'px';
+      document.body.style.marginTop  = offsetY + 'px';
+    }
+
+    /* Application immédiate + à chaque redimensionnement */
+    applyScale();
+    window.addEventListener('resize', applyScale);
+  })();
+</script>
 
 <!-- ============================================================
   LISTE DES SPONSORS — MODIFIER ICI
@@ -934,6 +927,16 @@ const SLOGAN_TOUS_LES_N = 13;
 
   showSlide(0);
   setInterval(next, DUREE_MS);
+
+  /* Re-applique le scale après chargement complet (images, fonts…) */
+  window.addEventListener('load', () => {
+    const scaleX = window.innerWidth  / 1920;
+    const scaleY = window.innerHeight / 1080;
+    const scale  = Math.min(scaleX, scaleY);
+    document.body.style.transform = 'scale(' + scale + ')';
+    document.body.style.marginLeft = ((window.innerWidth  - 1920 * scale) / 2) + 'px';
+    document.body.style.marginTop  = ((window.innerHeight - 1080 * scale) / 2) + 'px';
+  });
 
   /* ── Particules dorées — rendu DPR-aware pour la netteté 4K ── */
   const canvas = document.getElementById('particles');
