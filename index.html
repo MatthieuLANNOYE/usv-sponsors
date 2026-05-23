@@ -400,66 +400,56 @@
     }
 
     /* ============================================================
-      OPTIMISATION TV — Approche "fixed canvas + transform scale"
-      Standard pour le signage TV (Tizen, WebOS, Android TV…)
-      On dessine en 1920×1080 et on scale au viewport réel
+      OPTIMISATION TV — Tailles lisibles à distance, layout intact
+      Principe : on garde 100vw/100vh, on grossit juste les éléments
     ============================================================ */
 
-    html {
-      overflow: hidden;
-      background: var(--color-bg);
-    }
-
+    /* Overscan : padding safe-zone sur le body */
     body {
-      /* Canvas logique fixe 1920×1080 */
-      width: 1920px;
-      height: 1080px;
-      overflow: hidden;
-      /* L'origine du scale est en haut à gauche */
-      transform-origin: top left;
-      /* La valeur de scale est injectée par le JS ci-dessous */
+      padding: 2.5vh 3.5vw;
     }
 
-    /* ── Tailles calibrées sur 1920×1080 ── */
-
-    /* Sponsor : nom bien lisible à 3m */
+    /* ── Sponsor : nom bien lisible à 3m ── */
     .sponsor-name {
-      font-size: clamp(48px, 4.5vw, 86px);
+      font-size: clamp(36px, 4.2vw, 80px);
       letter-spacing: 0.08em;
     }
 
     .sponsor-location,
     .sponsor-contact {
-      font-size: clamp(24px, 1.8vw, 32px);
+      font-size: clamp(20px, 1.8vw, 30px);
       letter-spacing: 0.15em;
     }
 
     .sponsor-category {
-      font-size: clamp(18px, 1.4vw, 26px);
+      font-size: clamp(16px, 1.4vw, 24px);
       letter-spacing: 0.22em;
     }
 
-    /* Logo bien proportionné */
+    /* Logo plus grand */
     .logo-frame {
-      width: clamp(340px, 30vw, 580px);
-      height: clamp(190px, 22vh, 310px);
-      padding: 24px 36px;
-      border-radius: 14px;
+      width: clamp(300px, 32vw, 560px);
+      height: clamp(170px, 24vh, 300px);
+      padding: 20px 32px;
     }
 
     /* Header */
-    .club-name     { font-size: clamp(22px, 1.8vw, 34px); }
-    .club-subtitle { font-size: clamp(14px, 1.1vw, 20px); }
-    .header-label  { font-size: clamp(16px, 1.3vw, 24px); }
+    .club-name     { font-size: clamp(20px, 2vw, 32px); }
+    .club-subtitle { font-size: clamp(12px, 1.2vw, 18px); }
+    .header-label  { font-size: clamp(14px, 1.4vw, 22px); }
 
-    /* Footer */
-    .progress-track { width: min(800px, 72vw); height: 6px; }
-    .dot            { width: 11px; height: 11px; }
-    .merci          { font-size: clamp(13px, 1vw, 18px); }
+    /* Barre de progression */
+    .progress-track { width: min(760px, 68vw); height: 5px; }
+
+    /* Points de navigation */
+    .dot { width: 10px; height: 10px; }
+
+    /* Texte footer */
+    .merci { font-size: clamp(11px, 1vw, 16px); }
 
     /* Slogan club */
-    .club-slide .slogan-line   { font-size: clamp(52px, 5.5vw, 105px); }
-    .club-slide .club-full-name { font-size: clamp(16px, 1.4vw, 26px); }
+    .club-slide .slogan-line    { font-size: clamp(40px, 5.5vw, 95px); }
+    .club-slide .club-full-name { font-size: clamp(14px, 1.4vw, 24px); }
 
     /* Anti-aliasing TV */
     * {
@@ -470,33 +460,6 @@
   </style>
 </head>
 <body>
-
-<!-- ============================================================
-  SCALING TV — s'applique immédiatement au chargement
-============================================================ -->
-<script>
-  (function () {
-    const TARGET_W = 1920;
-    const TARGET_H = 1080;
-
-    function applyScale() {
-      const scaleX = window.innerWidth  / TARGET_W;
-      const scaleY = window.innerHeight / TARGET_H;
-      /* On prend le plus petit ratio pour que tout rentre sans déborder */
-      const scale  = Math.min(scaleX, scaleY);
-      document.body.style.transform = 'scale(' + scale + ')';
-      /* Centre le contenu si ratio d'aspect différent de 16:9 */
-      const offsetX = (window.innerWidth  - TARGET_W * scale) / 2;
-      const offsetY = (window.innerHeight - TARGET_H * scale) / 2;
-      document.body.style.marginLeft = offsetX + 'px';
-      document.body.style.marginTop  = offsetY + 'px';
-    }
-
-    /* Application immédiate + à chaque redimensionnement */
-    applyScale();
-    window.addEventListener('resize', applyScale);
-  })();
-</script>
 
 <!-- ============================================================
   LISTE DES SPONSORS — MODIFIER ICI
@@ -928,20 +891,10 @@ const SLOGAN_TOUS_LES_N = 13;
   showSlide(0);
   setInterval(next, DUREE_MS);
 
-  /* Re-applique le scale après chargement complet (images, fonts…) */
-  window.addEventListener('load', () => {
-    const scaleX = window.innerWidth  / 1920;
-    const scaleY = window.innerHeight / 1080;
-    const scale  = Math.min(scaleX, scaleY);
-    document.body.style.transform = 'scale(' + scale + ')';
-    document.body.style.marginLeft = ((window.innerWidth  - 1920 * scale) / 2) + 'px';
-    document.body.style.marginTop  = ((window.innerHeight - 1080 * scale) / 2) + 'px';
-  });
-
-  /* ── Particules dorées — rendu DPR-aware pour la netteté 4K ── */
+  /* ── Particules dorées ── */
   const canvas = document.getElementById('particles');
   const ctx    = canvas.getContext('2d');
-  const DPR    = Math.min(window.devicePixelRatio || 1, 2); /* cap à 2× pour perf */
+  const DPR    = Math.min(window.devicePixelRatio || 1, 2);
 
   function resizeCanvas() {
     const w = canvas.offsetWidth;
@@ -950,21 +903,20 @@ const SLOGAN_TOUS_LES_N = 13;
     canvas.height = h * DPR;
     canvas.style.width  = w + 'px';
     canvas.style.height = h + 'px';
-    ctx.scale(DPR, DPR);
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
   }
   resizeCanvas();
-  window.addEventListener('resize', () => { resizeCanvas(); });
+  window.addEventListener('resize', resizeCanvas);
 
-  /* Dimensions CSS réelles (indépendantes du DPR) */
-  function cssW() { return canvas.offsetWidth; }
-  function cssH() { return canvas.offsetHeight; }
+  const cW = () => canvas.offsetWidth;
+  const cH = () => canvas.offsetHeight;
 
-  const PARTICLE_COUNT = 65; /* un peu plus pour couvrir le grand écran */
+  const PARTICLE_COUNT = 60;
 
   const particles = Array.from({ length: PARTICLE_COUNT }, () => ({
-    x:       Math.random() * cssW(),
-    y:       Math.random() * cssH(),
-    r:       Math.random() * 2 + 0.5,
+    x:       Math.random() * cW(),
+    y:       Math.random() * cH(),
+    r:       Math.random() * 1.8 + 0.4,
     speedX:  (Math.random() - 0.5) * 0.25,
     speedY:  -(Math.random() * 0.4 + 0.1),
     opacity: Math.random() * 0.5 + 0.1,
@@ -972,8 +924,7 @@ const SLOGAN_TOUS_LES_N = 13;
   }));
 
   function drawParticles() {
-    const W = cssW();
-    const H = cssH();
+    const W = cW(), H = cH();
     ctx.clearRect(0, 0, W, H);
 
     particles.forEach(p => {
@@ -988,9 +939,9 @@ const SLOGAN_TOUS_LES_N = 13;
       p.x += p.speedX;
       p.y += p.speedY;
 
-      if (p.y < -5)        { p.y = H + 5; p.x = Math.random() * W; }
-      if (p.x < -5)        p.x = W + 5;
-      if (p.x > W + 5)     p.x = -5;
+      if (p.y < -5)    { p.y = H + 5; p.x = Math.random() * W; }
+      if (p.x < -5)      p.x = W + 5;
+      if (p.x > W + 5)   p.x = -5;
     });
 
     requestAnimationFrame(drawParticles);
