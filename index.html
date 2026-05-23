@@ -92,7 +92,7 @@
     }
 
     .club-name {
-      font-size: clamp(10px, 1vw, 13px);
+      font-size: clamp(16px, 1.8vw, 28px);
       white-space: nowrap;
       font-weight: bold;
       letter-spacing: 0.12em;
@@ -101,7 +101,7 @@
     }
 
     .club-subtitle {
-      font-size: clamp(11px, 1.2vw, 15px);
+      font-size: clamp(12px, 1.3vw, 18px);
       color: var(--color-subtle);
       letter-spacing: 0.2em;
       text-transform: uppercase;
@@ -109,17 +109,17 @@
 
     .header-label {
       margin-left: auto;
-      white-space: nowrap;     /* ← empêche le retour à la ligne */
-      font-size: clamp(12px, 1.3vw, 18px);
-      color: var(--color-accent);           /* doré au lieu de subtle */
+      white-space: nowrap;
+      font-size: clamp(14px, 1.5vw, 22px);
+      color: var(--color-accent);
       letter-spacing: 0.2em;
       text-transform: uppercase;
-      border: 1px solid var(--color-accent); /* bordure dorée */
+      border: 1px solid var(--color-accent);
       padding: 5px 14px;
       border-radius: 20px;
       font-weight: bold;
-      text-shadow: 0 0 12px rgba(232,176,32,0.4); /* légère lueur */
-      box-shadow: 0 0 10px rgba(232,176,32,0.15);  /* halo extérieur */
+      text-shadow: 0 0 12px rgba(232,176,32,0.4);
+      box-shadow: 0 0 10px rgba(232,176,32,0.15);
     }
 
     /* === ZONE PRINCIPALE === */
@@ -155,6 +155,9 @@
     /* === CARTE SPONSOR === */
     .sponsor-card {
       position: absolute;
+      top: 50%;
+      left: 50%;
+      width: min(88vw, 1000px);        /* empêche le débordement horizontal */
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -162,29 +165,28 @@
       gap: clamp(8px, 1.5vh, 18px);
       padding: 16px 40px;
       opacity: 0;
-      transform: scale(0.97);
+      transform: translate(-50%, -50%) scale(0.97);
       transition:
         opacity calc(var(--duration-fade) * 1ms) ease,
         transform calc(var(--duration-fade) * 1ms) ease;
-      max-width: 80vw;
       text-align: center;
     }
 
     .sponsor-card.active {
       opacity: 1;
-      transform: scale(1);
+      transform: translate(-50%, -50%) scale(1);
     }
 
     /* Cadre logo */
     .logo-frame {
-      width: clamp(180px, 25vw, 340px);
-      height: clamp(100px, 16vh, 200px);
+      width: clamp(260px, 30vw, 500px);
+      height: clamp(140px, 20vh, 260px);
       background: #fff;
       border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 14px 20px;
+      padding: 18px 28px;
       box-shadow:
         0 0 0 3px var(--color-accent),
         0 20px 60px rgba(0,0,0,0.6);
@@ -209,7 +211,7 @@
 
     /* Nom du sponsor */
     .sponsor-name {
-      font-size: clamp(20px, 3vw, 44px);
+      font-size: clamp(32px, 4vw, 72px);
       font-weight: bold;
       letter-spacing: 0.06em;
       color: var(--color-accent2);
@@ -219,7 +221,7 @@
 
     /* Catégorie optionnelle */
     .sponsor-category {
-      font-size: clamp(12px, 1.3vw, 17px);
+      font-size: clamp(14px, 1.4vw, 22px);
       color: var(--color-subtle);
       letter-spacing: 0.22em;
       text-transform: uppercase;
@@ -235,9 +237,9 @@
 
     .sponsor-location,
     .sponsor-contact {
-      font-size: clamp(13px, 1.5vw, 20px);
+      font-size: clamp(16px, 1.8vw, 28px);
       color: var(--color-subtle);
-      letter-spacing: 0.22em;
+      letter-spacing: 0.15em;
       text-transform: uppercase;
     }
 
@@ -247,6 +249,9 @@
     /* === DIAPO SLOGAN CLUB === */
     .club-slide {
       position: absolute;
+      top: 50%;
+      left: 50%;
+      width: min(90vw, 1100px);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -254,17 +259,16 @@
       gap: clamp(18px, 3vh, 36px);
       padding: 40px 80px;
       opacity: 0;
-      transform: scale(0.97);
+      transform: translate(-50%, -50%) scale(0.97);
       transition:
         opacity calc(var(--duration-fade) * 1ms) ease,
         transform calc(var(--duration-fade) * 1ms) ease;
       text-align: center;
-      max-width: 90vw;
     }
 
     .club-slide.active {
       opacity: 1;
-      transform: scale(1);
+      transform: translate(-50%, -50%) scale(1);
     }
 
     .club-slide .badge-lg {
@@ -399,64 +403,24 @@
       z-index: 1;
     }
 
-    /* ============================================================
-      OPTIMISATION TV — Tailles lisibles à distance, layout intact
-      Principe : on garde 100vw/100vh, on grossit juste les éléments
-    ============================================================ */
-
-    /* Overscan : padding safe-zone sur le body */
-    body {
-      padding: 2.5vh 3.5vw;
-    }
-
-    /* ── Sponsor : nom bien lisible à 3m ── */
-    .sponsor-name {
-      font-size: clamp(36px, 4.2vw, 80px);
-      letter-spacing: 0.08em;
-    }
-
-    .sponsor-location,
-    .sponsor-contact {
-      font-size: clamp(20px, 1.8vw, 30px);
-      letter-spacing: 0.15em;
-    }
-
-    .sponsor-category {
-      font-size: clamp(16px, 1.4vw, 24px);
-      letter-spacing: 0.22em;
-    }
-
-    /* Logo plus grand */
-    .logo-frame {
-      width: clamp(300px, 32vw, 560px);
-      height: clamp(170px, 24vh, 300px);
-      padding: 20px 32px;
-    }
-
-    /* Header */
-    .club-name     { font-size: clamp(20px, 2vw, 32px); }
-    .club-subtitle { font-size: clamp(12px, 1.2vw, 18px); }
-    .header-label  { font-size: clamp(14px, 1.4vw, 22px); }
-
-    /* Barre de progression */
-    .progress-track { width: min(760px, 68vw); height: 5px; }
-
-    /* Points de navigation */
-    .dot { width: 10px; height: 10px; }
-
-    /* Texte footer */
-    .merci { font-size: clamp(11px, 1vw, 16px); }
-
-    /* Slogan club */
-    .club-slide .slogan-line    { font-size: clamp(40px, 5.5vw, 95px); }
-    .club-slide .club-full-name { font-size: clamp(14px, 1.4vw, 24px); }
-
-    /* Anti-aliasing TV */
+    /* ── Anti-aliasing TV ── */
     * {
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       text-rendering: optimizeLegibility;
     }
+
+    /* ── Overscan safe-zone ── */
+    body { padding: 2vh 3vw; }
+
+    /* ── Barre de progression ── */
+    .progress-track { width: min(700px, 65vw); height: 5px; }
+    .dot            { width: 10px; height: 10px; }
+    .merci          { font-size: clamp(11px, 1vw, 16px); }
+
+    /* ── Slogan club ── */
+    .club-slide .slogan-line    { font-size: clamp(36px, 5vw, 88px); }
+    .club-slide .club-full-name { font-size: clamp(14px, 1.4vw, 22px); }
   </style>
 </head>
 <body>
